@@ -1,0 +1,85 @@
+---
+title: "Statistical Inference Project - Part 2"
+author: Prashant Chand
+date: 2 Jan 2020
+output: pdf_document
+---
+### Part 2: Basic Inferential Data Analysis
+
+### Synopsis:
+In this second part of the project we're going to analyze the ToothGrowth dataset in the R datasets package.This data is about the growth in length of teeths of Guinea pigs when they are provided with the certain amount of doses of vitamin C.
+Vitamin C is provided in 2 differrent forms i.e OJ(Orange Juice) and VC (Ascorbi Acid, a form of Vitamin C).The no of doses provided to the pigs are 0.5,1 and 2.
+
+### Load the ToothGrowth data and required packages
+```{r}
+library(ggplot2)
+data(ToothGrowth)
+```
+First few rows of the data to get an insight on how the data looks like.
+```{r}
+head(ToothGrowth)
+```
+### Summary of the data
+```{r}
+str(ToothGrowth)
+```
+As we can see from the summary of the data there are 60 obs. of  3 variables i.e len,supp and dose.The len variable contains the length of the tooths of the pigs.The supp variable is a factor variable which has 2 levels i.e OJ and VC.The dose variable has 3 values i.e 0.5,1 and 2. 
+
+### Basic exploratory data analyses
+
+```{r}
+g<-ggplot(data=ToothGrowth,aes(x=dose,y=len,col=supp))
+g+geom_point()
+```
+
+It can be seen clearly that the growth in the length of tooths of the pigs who are provided with 2 doses of vitamin C has significantly more growth than the ones who are provide with less dose of Vitamin C.It can also be observed that the ones who are given OJ has more growth than those who are given VC.
+
+```{r}
+g<-ggplot(data = ToothGrowth,aes(x=supp,y=len))
+g+geom_boxplot()
+```
+
+It can be seen that the median of the length of the pigs who are given OJ(orange Juice) is around 23 and the ones who are given VC the median of these pigs is around 16.So we can conclude here that the pigs who are given the dose s of OJ the growth in their length is significantly larger which we will further prove in our hypothesis testing. 
+
+### Using hypothesis testing to compare tooth growth by supp and dose.
+
+I)First we will be doing the hypothesis testing of the difference in means of the length of the pigs with respect to the supplement types given to them.  
+Ho:True Diffrence in means is 0   
+Ha:True Differnce in means is not equal to 0
+```{r}
+OJ<-ToothGrowth[ToothGrowth$supp=="OJ",]$len
+VC<-ToothGrowth[ToothGrowth$supp=="VC",]$len
+t.test(OJ,VC,paired = FALSE)
+```
+
+From the t-test results it can be observed that the p value is 0.06063 which is slightly more than the significance level of 0.05.Hence we cannot reject the null hypothesis.So we can say that the supplement types has no impact on the tooth growth based on this test.
+We can also observe from the result that the mean of OJ is more than the mean of VC.But we are not rejecting the null hypothesis here so we cannot confirm that the growth in the tooth of pigs who are given OJ is more than the ones who are given VC.
+
+II)Second hypothesis testing will be based on the no of doses given to the pigs and see the impact of the doses on them.  
+a)The hypothesis testing between data of the pigs who are given 0.5 and 1 doses.
+```{r}
+point5_dose<-ToothGrowth[ToothGrowth$dose==0.5,]$len
+one_dose<-ToothGrowth[ToothGrowth$dose==1,]$len
+t.test(point5_dose,one_dose,paired = FALSE)
+```
+The p-value is very small and the confidence interval does not contain 0,so we can reject the null hypothesis and can say that as the no of dose increase the length of the tooths also increase.
+
+b)The hypothesis testing between data of the pigs who are given 1 and 2 doses.
+```{r}
+two_dose<-ToothGrowth[ToothGrowth$dose==2,]$len
+t.test(one_dose,two_dose,paired = FALSE)
+```
+Again the p-value is very small and the confidence interval does not contain 0,so we can reject the  null hypothesis.Hence we can say that the increase in no of doses have significant impcat on the growth of the tooth.
+
+c)The hypothesis testing between data of the pigs who are given 0.5 and 2 doses.
+```{r}
+t.test(point5_dose,two_dose,paired = FALSE)
+```
+The p-value is very small and we can reject the null hypothesis.
+
+### Conclusion 
+Based on this result we can assume that the average tooth length increases with an inceasing dose, and therefore the null hypothesis can be rejected.
+
+Given the following assumptions:
+1)The sample is representative of the population
+2)The distribution of the sample means follows the Central Limit Theorem
